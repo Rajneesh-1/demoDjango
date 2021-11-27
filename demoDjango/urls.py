@@ -16,9 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from human import views
-
+# this is my root url
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name="home"),
-    path('login', views.login, name="login"),
+    path('login', views.login, name="loginName"),
+    path('delete/<int:id>/', views.delete_data, name='deletedata'),
+    path('edit/<int:id>/', views.edit_data, name='editdata'),
 ]
