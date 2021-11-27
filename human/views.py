@@ -67,4 +67,5 @@ def delete_data(request, id):
     getSavedDetails = DetailsOfHuman.objects.all()
     """check for name in root url"""
     #return redirect("homeHTML")
+
     return render(request, "homeHTML/home.html", {"getSavedDetails": getSavedDetails})
