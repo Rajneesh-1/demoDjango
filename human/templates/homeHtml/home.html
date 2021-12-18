@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -18,145 +19,272 @@
       background-color:navy;
    }
    .sel1{
-
         padding: 5px 10px;
         box-sizing: border-box;
         border-radius: 5px;
    }
 </style>
+
 <body>
-   <div class="container custom_margin">
-       <div class="row" style="background-color:black;">
-           <div class="col-sm-6">
-                   <h1>Welcome to Home !</h1>
-           </div>
-           <div class="col-sm-6" style="margin-top:10px;">
-               <a class="btn btn-primary" href="{% url 'loginName' %}" role="button">Home</a>
-           </div>
-       </div>
-   </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-9">
 
-{% if corm %}
-  <div class="container custom_margin">
-   <div class="row" style="background-color:black;padding:20px;">
-        <div class="col-sm-12">
+                       <div class="container custom_margin">
+                           <div class="row" style="background-color:black;">
+                               <div class="col-sm-6">
+                                       <h1>Welcome to Home !</h1>
+                               </div>
+                               <div class="col-sm-6" style="margin-top:10px;">
+                                   <a class="btn btn-primary" href="{% url 'loginName' %}" role="button">Home</a>
+                               </div>
+                           </div>
+                       </div>
 
-           <form method="post" style="background-color:wheat;padding:20px;">
-                        <h1 style="color:navy;padding:10px;">Edit Your Details</h1>
-                          {% csrf_token %}
-                         <div class="row" >
-                              <div class="col-sm-12">
-                                  {{corm}}
+                    {% if corm %}
+                      <div class="container custom_margin">
+                       <div class="row" style="background-color:black;padding:20px;">
+                            <div class="col-sm-12">
+                               <form method="post" style="background-color:wheat;padding:20px;">
+                                    <h1 style="color:navy;padding:10px;">Edit Your Details</h1>
+                                      {% csrf_token %}
+                                     <div class="row" >
+                                          <div class="col-sm-12">
+                                              {{corm}}
+                                          </div>
+                                      </div>
+                                    <button type="submit" style="margin-top:20px" class="btn btn-secondary">Update</button>
+                               </form>
+                            </div>
+                       </div>
+                      </div>
+                       {% else %}
+
+                         <div class="container custom_margin">
+                       <div class="row" style="background-color:black;padding:20px;">
+                           <div class="col-sm-12" >
+                               {% if isNameOfThisUserPresent %}
+                               <div class="row">
+                                   <div class="col-sm-1">
+                                        <div class="spinner-grow text-danger" role="status">
+                                            <span class="visually-hidden"></span>
+                                        </div>
+                                   </div>
+                                   <div class="col-sm-11">
+                                        <h2 style="color:red;"> User with this Name Already Exist, Please Take New !</h2>
+                                   </div>
+
+                               </div>
+                               {% endif %}
+
+                               <form method="post" style="margin-bottom:25px;">
+                               <h1 style="color:gold;padding:10px;">Create/Add Your Details</h1>
+                               {% csrf_token %}
+                               <div class="row">
+                                   <div class="col">
+                                       <input name="name" type="text" class="form-control" placeholder="Your name" required>
+                                   </div>
+                                   <div class="col">
+                                       <input name="city" type="text" class="form-control" placeholder="City" required>
+                                   </div>
+                                   <div class="col">
+                                       <input name="favourite_food" type="text" class="form-control" placeholder="favourite_food" required>
+                                   </div>
+                               </div>
+                                   <button type="submit" style="margin-top:20px" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#mymodal">Create</button>
+                           </form>
+                           </div>
+                           <div class="container">
+                                <div class="row">
+                               <div class="col-sm-4 dropdown input-group">
+                                      <input class="form-control" id="peopleName" placeholder="Choose Your Name" required>
+                                      <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Select User
+                                      </a>
+                                      <ul class="dropdown-menu" id="demolist" aria-labelledby="dropdownMenuLink">
+                                          {% for i in getSavedDetails %}
+                                            <li><a class="dropdown-item" href="#">{{i.name}}</a></li>
+                                          {% endfor %}
+                                      </ul>
+                               </div>
+                               <div class="col-sm-4">
+                                   <input class="form-control" id="quotes" placeholder="Enter your Quotes" required>
+                               </div>
+                               <div class="col-sm-4">
+                                   <form method = 'POST'class="input-group" action='' id = 'pinform'>
+                                   {% csrf_token %}
+                                   <input class="form-control" id="inputBoxValue" placeholder="Your Total Fav. Quotes? Eg. 1, 2" required>
+                                   <button type="submit" style="margin-left:25px;" class="btn btn-secondary">Add</button>
+                                </form>
+                               </div>
+                           </div>
+                           </div>
+                       </div>
+                       </div>
+                    {% endif %}
+
+                    {% if messages %}
+                       <div class="container">
+                           <div class="row">
+                               <div class="col-sm-6">
+                                   <div class="alert alert-success" role="alert">
+
+                                          {% for message in messages %}
+                                            <small {% if message.tags %} class ="{{message.tags}}" {% endif %}><h3 style="color:green;">{{message}}</h3> </small>
+                                          {% endfor %}
+                                   </div>
+                               </div>
+                           </div>
+                       </div>
+                    {% endif %}
+
+                    <div class="container custom_margin" >
+                       <div class="row" style="background-color:black;padding:25px;" >
+                           <div class="col-sm-12">
+                               <table class="table table-dark table-hover">
+                                  <thead>
+                                    <tr>
+                                      <th scope="col">Id</th>
+                                      <th scope="col">Name</th>
+                                      <th scope="col">City</th>
+                                      <th scope="col">Favourite Food</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+
+                                      {% for i in getSavedDetails %}
+                                          <tr>
+                                              <td>{{i.id}}</td>
+                                              <td>{{i.name}}</td>
+                                              <td>{{i.city}}</td>
+                                              <td>{{i.favourite_food}}</td>
+                                               <form action="{% url 'editdata' i.id %}">
+                                                    <td><button class="btn btn-info" >Edit</button></td>
+                                              </form>
+                                              <form action="{% url 'deletedata' i.id %}" method="POST">
+                                                    {% csrf_token %}
+                                                    <td><button class="btn btn-danger" >Delete</button></td>
+                                              </form>
+                                          </tr>
+                                      {% endfor %}
+
+                                      <!-- To show 1 object using filter
+                                      {% for i in getSavedDetails %}
+                                              <tr>
+                                                  <td>{{i.id}}</td>
+                                                  <td>{{i.name}}</td>
+                                                  <td>{{i.city}}</td>
+                                                  <td>{{i.favourite_food}}</td>
+                                                   <form action="{% url 'editdata' i.id %}">
+                                                        <td><button class="btn btn-info" >Edit</button></td>
+                                                  </form>
+                                                  <form action="{% url 'deletedata' i.id %}">
+                                                        <td><button class="btn btn-danger" >Delete</button></td>
+                                                  </form>
+                                              </tr>
+                                      {% endfor %}-->
+                                  </tbody>
+                                </table>
+                           </div>
+                       </div>
+                    </div>
+
+                    </div>
+        <div class="col-sm-3 mt-3">
+            <h2 style="color:cyan;">Popular Quotes by peoples . . .</h2>
+            <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-inner">
+                {% for name,quote in favoriteQoutesAndName.items %}
+                  {% if forloop.counter0 == 0 %}
+                     <div class="carousel-item active">
+                         <p align="center">
+                              <a class="btn btn-primary" style="color:white;box-shadow:-2px -2px 2px navy, 2px 2px 2px navy;" data-bs-toggle="collapse" href="#collapseExample1" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                {{name}}
+                              </a>
+                            </p>
+                            <div class="collapse" id="collapseExample1">
+                              <div class="card card-body">
+                                {{quote}}
                               </div>
-                          </div>
-                        <button type="submit" style="margin-top:20px" class="btn btn-secondary">Update</button>
-           </form>
+                            </div>
+                     </div>
+                  {% elif forloop.counter0 == 1 %}
+                     <div class="carousel-item">
+                     <p align="center">
+                              <a class="btn btn-primary" style="color:white;" data-bs-toggle="collapse" href="#collapseExample2" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                {{name}}
+                              </a>
+                            </p>
+                            <div class="collapse" id="collapseExample2">
+                              <div class="card card-body">
+                                  {{quote}}
+                              </div>
+                            </div>
+                     </div>
+                  {% elif forloop.counter0 == 2 %}
+                      <div class="carousel-item">
+                         <p align="center">
+                              <a class="btn btn-primary" style="color:white;" data-bs-toggle="collapse" href="#collapseExample3" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                {{name}}
+                              </a>
+                            </p>
+                            <div class="collapse" id="collapseExample3">
+                              <div class="card card-body">
+                                {{quote}}
+                              </div>
+                            </div>
+                      </div>
+                  {% endif %}
+                {% endfor %}
+              </div>
+          </div>
+      </div>
+            </div>
         </div>
-   </div>
-  </div>
-   {% else %}
-
-     <div class="container custom_margin">
-   <div class="row" style="background-color:black;padding:20px;">
-        <div class="col-sm-12">
-           <form method="post">
-                 <h1 style="color:gold;padding:10px;">Create/Add Your Details</h1>
-                  {% csrf_token %}
-                  <div class="row">
-                      <div class="col">
-                        <input name="name" type="text" class="form-control" placeholder="Your name" required>
-                      </div>
-                      <div class="col">
-                        <input name="city" type="text" class="form-control" placeholder="City" required>
-                      </div>
-                      <div class="col">
-                        <input name="favourite_food" type="text" class="form-control" placeholder="favourite_food" required>
-                      </div>
-                  </div>
-                  <div class="row">
-                      <div class="col-sm-12">
-                        <button type="submit" style="margin-top:20px" class="btn btn-outline-success">Create</button>
-                      </div>
-                  </div>
-           </form>
-       </div>
-   </div>
-  </div>
-
-   {% endif %}
-
-   {% if messages %}
-   <div class="container">
-       <div class="row">
-           <div class="col-sm-6">
-               <div class="alert alert-success" role="alert">
-
-                      {% for message in messages %}
-                        <small {% if message.tags %} class ="{{message.tags}}"{% endif %}><h3 style="color:green;">{{message}}</h3> </small>
-                      {% endfor %}
-               </div>
-           </div>
-       </div>
-    {% endif %}
-
-   </div>
-
-   <div class="container custom_margin" >
-       <div class="row" style="background-color:black;padding:25px;" >
-           <div class="col-sm-12">
-               <table class="table table-dark table-hover">
-                  <thead>
-                    <tr>
-                      <th scope="col">Id</th>
-                      <th scope="col">Name</th>
-                      <th scope="col">City</th>
-                      <th scope="col">Favourite Food</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-
-                      {% for i in getSavedDetails %}
-                          <tr>
-                              <td>{{i.id}}</td>
-                              <td>{{i.name}}</td>
-                              <td>{{i.city}}</td>
-                              <td>{{i.favourite_food}}</td>
-                               <form action="{% url 'editdata' i.id %}">
-                                    <td><button class="btn btn-info" >Edit</button></td>
-                              </form>
-                              <form action="{% url 'deletedata' i.id %}" method="POST">
-                                    {% csrf_token %}
-                                    <td><button class="btn btn-danger" >Delete</button></td>
-                              </form>
-                          </tr>
-                      {% endfor %}
-
-                      <!-- To show 1 object using filter
-                      {% for i in getSavedDetails %}
-                              <tr>
-                                  <td>{{i.id}}</td>
-                                  <td>{{i.name}}</td>
-                                  <td>{{i.city}}</td>
-                                  <td>{{i.favourite_food}}</td>
-                                   <form action="{% url 'editdata' i.id %}">
-                                        <td><button class="btn btn-info" >Edit</button></td>
-                                  </form>
-                                  <form action="{% url 'deletedata' i.id %}">
-                                        <td><button class="btn btn-danger" >Delete</button></td>
-                                  </form>
-                              </tr>
-                      {% endfor %}-->
-
-                  </tbody>
-                </table>
-           </div>
-       </div>
-   </div>
 
 
+<!-- OLDER
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
+-->
 
+
+<!-- NEW-->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.js"
+          integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+            crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+    $(document).on('submit','#pinform',function(e){
+        e.preventDefault();
+        $.ajax({
+            type:'POST',
+            url:'{% url "showFavouriteQoutesTextBox" %}',
+            data:
+            {
+
+                peopleName: $("#peopleName").val(),
+                quotes: $("#quotes").val(),
+                quotesCount: $("#inputBoxValue").val(),
+                csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+            },
+            success:function(response){
+                      console.log(response.peopleName)
+                      console.log(response.quotes)
+                      console.log(response.no_of_quotes)
+                    }
+            })
+        });
+    </script>
+<script type="text/javascript">
+    $('#demolist li').on('click', function(){
+     $('#peopleName').val($(this).text());
+});
+
+</script>
 </body>
 </html>

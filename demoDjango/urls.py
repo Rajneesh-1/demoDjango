@@ -23,4 +23,5 @@ urlpatterns = [
     path('login', views.login, name="loginName"),
     path('delete/<int:id>/', views.delete_data, name='deletedata'),
     path('edit/<int:id>/', views.edit_data, name='editdata'),
+    path('showFavouriteQoutesTextBox', views.showFavouriteQoutesTextBox, name="showFavouriteQoutesTextBox"),
 ]

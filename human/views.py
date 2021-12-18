@@ -1,23 +1,52 @@
 import requests
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, HttpResponseRedirect
-from human.models import DetailsOfHuman
+from human.models import DetailsOfHuman, favouriteQuotes
 from human.forms import formDetails
 from django.contrib import messages
+
 
 # Create your views here.
 def home(request):
     if request.method == 'POST':
-        name = request.POST['name']
-        city = request.POST['city']
-        favourite_food = request.POST['favourite_food']
+        if (request.POST['name'] != " "):
+            name = request.POST['name']
+            city = request.POST['city']
+            favourite_food = request.POST['favourite_food']
+
+            checkNameInsideDB = DetailsOfHuman.objects.filter(name=request.POST['name'])
+            if (len(checkNameInsideDB) != 0):
+                isNameOfThisUserPresent = True
+            else:
+                isNameOfThisUserPresent = False
+                instanceOfDetails = DetailsOfHuman.objects.create(name=name, city=city, favourite_food=favourite_food)
+                instanceOfDetails.save()
+        else:
+            name = request.POST['name'] + " " + request.POST['middleName']
+            city = request.POST['city']
+            favourite_food = request.POST['favourite_food']
+            instanceOfDetails = DetailsOfHuman.objects.create(name=name, city=city, favourite_food=favourite_food)
+            instanceOfDetails.save()
+            isNameOfThisUserPresent = False
 
         """To Create New Instance/objects of DetailsOfHuman"""
-        instanceOfDetails = DetailsOfHuman.objects.create(name=name, city=city, favourite_food=favourite_food)
+        # instanceOfDetails = DetailsOfHuman.objects.create(name=name, city=city, favourite_food=favourite_food)
         """To Save New Instance/objects of DetailsOfHuman"""
-        instanceOfDetails.save()
+        # instanceOfDetails.save()
+
+
+    else:
+        isNameOfThisUserPresent = False
 
     '''To Show All objects of DetailsOfHuman'''
     getSavedDetails = DetailsOfHuman.objects.all()
+    getFovouriteQoutesDetails = favouriteQuotes.objects.all()
+    tempDict={}
+    for i in getFovouriteQoutesDetails:
+        y = DetailsOfHuman.objects.get(id=i.user_f_quotes_id)
+        tempDict[y.name] = i.quote
+        print("favourite quotes by user ----> ",tempDict) # name ---> rohit, qoute ---> "how"
+
     print("getSavedDetails", getSavedDetails)
 
     """
@@ -31,12 +60,13 @@ def home(request):
         getSavedDetails = DetailsOfHuman.objects.get(id=33)
         print("getSavedDetails", getSavedDetails)
     """
-
-    return render(request, 'homeHTML/home.html', {"getSavedDetails": getSavedDetails})
+    return render(request, 'homeHTML/home.html',
+                  {"getSavedDetails": getSavedDetails, "isNameOfThisUserPresent": isNameOfThisUserPresent,"favoriteQoutesAndName": tempDict})
 
 
 def login(request):
     return render(request, 'loginHTML/login.html')
+
 
 def edit_data(request, id):
     if request.method == "POST":
@@ -66,6 +96,22 @@ def delete_data(request, id):
 
     getSavedDetails = DetailsOfHuman.objects.all()
     """check for name in root url"""
-    #return redirect("homeHTML")
+    # return redirect("homeHTML")
 
     return render(request, "homeHTML/home.html", {"getSavedDetails": getSavedDetails})
+
+def showFavouriteQoutesTextBox(request):
+    print("-----------------------------------------------------------------------------------------")
+    if request.method == 'POST':
+        print("request.POST --------------------> ", request.POST)
+        peopleName = request.POST['peopleName']
+        quotes = request.POST['quotes']
+        no_of_quotes = request.POST['quotesCount']
+        print("||no_of_quotes||", no_of_quotes)
+        getUser = DetailsOfHuman.objects.filter(name = peopleName)
+        print(getUser)
+        for i in getUser:
+            print(i.id)
+            saveFavouriteQuotes = favouriteQuotes(quote=request.POST['quotes'], user_f_quotes_id = i.id)
+            saveFavouriteQuotes.save()
+        return JsonResponse({})
